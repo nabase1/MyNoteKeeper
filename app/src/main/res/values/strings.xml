@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MyNoteKeeper</string>
+    <string name="cancel">Cancel</string>
+    <string name="send_via_email">Send Via Email</string>
 </resources>

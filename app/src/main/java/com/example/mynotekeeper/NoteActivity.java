@@ -1,16 +1,19 @@
 package com.example.mynotekeeper;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.List;
+import java.util.zip.Inflater;
 
 public class NoteActivity extends AppCompatActivity {
 
@@ -32,6 +35,11 @@ public class NoteActivity extends AppCompatActivity {
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()));
         mViewModel = viewModelProvider.get(NoteActivityViewModel.class);
 
+        if(mViewModel.mViewIsNew && savedInstanceState != null)
+            mViewModel.restoreState(savedInstanceState);
+
+        mViewModel.mViewIsNew = false;
+
         mSpinner = findViewById(R.id.spinner_courses);
         mTitleText = findViewById(R.id.text_title);
         mBodyText = findViewById(R.id.text_body);
@@ -45,6 +53,15 @@ public class NoteActivity extends AppCompatActivity {
         saveOriginalNote();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater =  getMenuInflater();
+        menuInflater.inflate(R.menu.options_menu, menu);
+
+        return true;
+
+    }
+
     private void saveOriginalNote() {
         if(mIsNewNote)
             return;
@@ -54,10 +71,19 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(outState != null)
+            mViewModel.saveState(outState);
+    }
+
+    @Override
     protected void onPostResume() {
         super.onPostResume();
         restorePreviouslyNote();
     }
+
 
     private void restorePreviouslyNote() {
 
@@ -79,21 +105,20 @@ public class NoteActivity extends AppCompatActivity {
     public void readCurrentNoteState(){
         Intent intent = getIntent();
        // mNote = intent.getParcelableExtra(Constants.NOTE_INFO);
-        int position = intent.getIntExtra(Constants.NOTE_INFO, Constants.POSITION_NOT_SET);
+        mNotePosition = intent.getIntExtra(Constants.NOTE_INFO, Constants.POSITION_NOT_SET);
 
         mIsNewNote = mNote == null;
         if(mIsNewNote){
             createNewNote();
-        }else {
-            mNote = DataManager.getInstance().getNotes().get(position);
         }
+            mNote = DataManager.getInstance().getNotes().get(mNotePosition);
 
     }
 
     private void createNewNote() {
         DataManager dm = DataManager.getInstance();
         mNotePosition = dm.createNewNote();
-        mNote = dm.getNotes().get(mNotePosition);
+        //mNote = dm.getNotes().get(mNotePosition);
     }
 
     @Override
