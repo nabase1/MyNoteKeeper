@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -49,8 +50,13 @@ public class NoteActivity extends AppCompatActivity {
         courseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(courseAdapter);
 
+
+
         readCurrentNoteState();
         saveOriginalNote();
+
+        if(!mIsNewNote)
+        displayNotes(mSpinner, mTitleText, mBodyText);
     }
 
     @Override
@@ -60,6 +66,18 @@ public class NoteActivity extends AppCompatActivity {
 
         return true;
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.send_item){
+            sendEmail();
+        }
+        if(item.getItemId() == R.id.cancel_item){
+            mIsCancelling = true;
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void saveOriginalNote() {
@@ -78,12 +96,6 @@ public class NoteActivity extends AppCompatActivity {
             mViewModel.saveState(outState);
     }
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        restorePreviouslyNote();
-    }
-
 
     private void restorePreviouslyNote() {
 
@@ -93,12 +105,12 @@ public class NoteActivity extends AppCompatActivity {
         mNote.setText(mViewModel.mOriginalBody);
     }
 
-    public void displayNotes(){
+    public void displayNotes(Spinner spinner, EditText titleText, EditText bodyText){
         List<CourseInfo> courseInfos = DataManager.getInstance().getCourses();
         int courseIndex = courseInfos.indexOf(mNote.getCourse());
-        mSpinner.setSelection(courseIndex);
-        mTitleText.setText(mNote.getTitle());
-        mBodyText.setText(mNote.getText());
+        spinner.setSelection(courseIndex);
+        titleText.setText(mNote.getTitle());
+        bodyText.setText(mNote.getText());
 
     }
 
@@ -107,7 +119,7 @@ public class NoteActivity extends AppCompatActivity {
        // mNote = intent.getParcelableExtra(Constants.NOTE_INFO);
         mNotePosition = intent.getIntExtra(Constants.NOTE_INFO, Constants.POSITION_NOT_SET);
 
-        mIsNewNote = mNote == null;
+        mIsNewNote = mNotePosition == Constants.POSITION_NOT_SET;
         if(mIsNewNote){
             createNewNote();
         }

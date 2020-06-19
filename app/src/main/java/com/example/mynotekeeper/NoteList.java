@@ -1,12 +1,15 @@
 package com.example.mynotekeeper;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.List;
@@ -24,28 +27,32 @@ public class NoteList extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
         mNoteAdapter.notifyDataSetChanged();
     }
 
     private void initializeListContent() {
 
-        ListView listView = findViewById(R.id.listNote);
+//        ListView listView = findViewById(R.id.listNote);
+//
+//        final List<NoteInfo> noteList = DataManager.getInstance().getNotes();
+//        mNoteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, noteList);
+//
+//        listView.setAdapter(mNoteAdapter);
+//
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(NoteList.this, NoteActivity.class);
+//                //NoteInfo note = (NoteInfo) noteList.get(position);
+//                intent.putExtra(Constants.NOTE_INFO, position);
+//                startActivity(intent);
+//            }
+//        });
 
-        final List<NoteInfo> noteList = DataManager.getInstance().getNotes();
-        mNoteAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, noteList);
-
-        listView.setAdapter(mNoteAdapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(NoteList.this, NoteActivity.class);
-                //NoteInfo note = (NoteInfo) noteList.get(position);
-                intent.putExtra(Constants.NOTE_INFO, position);
-                startActivity(intent);
-            }
-        });
+        final RecyclerView recyclerView = findViewById(R.id.list_notes);
+        final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(notesLayoutManager);
     }
 }
