@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="@+id/nav_host_fragment"
         app:layout_constraintStart_toStartOf="@+id/nav_host_fragment"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_list" />
+        tools:listitem="@layout/note_list" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"

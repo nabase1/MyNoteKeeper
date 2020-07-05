@@ -8,5 +8,7 @@ public class Constants {
     public static final String COURSE_ID = "NOTE_ID";
     public static final String NOTE_TITLE = "NOTE_TITLE";
     public static final String NOTE_BODY ="NOTE_BODY";
+    public static final String DATABASE_NAME = "MyNote.db";
+    public static final int DATABASE_VERSION = 1;
 
 }
