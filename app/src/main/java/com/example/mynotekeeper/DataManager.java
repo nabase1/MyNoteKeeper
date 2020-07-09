@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mynotekeeper.MyNoteDbContract.*;
+import static java.sql.Types.NULL;
 
 public class DataManager {
     private static DataManager ourInstance = null;
@@ -33,7 +34,10 @@ public class DataManager {
         Cursor courseCursor = db.query(CourseEntryInfo.TABLE_NAME, courseColumns, null, null, null, null, courseOrder);
         loadCursesFromDb(courseCursor);
 
-        String[] noteColumns = {NoteInfoEntry.COLUMN_NOTE_TITLE, NoteInfoEntry.COLUMN_NOTE, NoteInfoEntry.COLUMN_COURSE_ID};
+        String[] noteColumns = {NoteInfoEntry.COLUMN_NOTE_TITLE,
+                NoteInfoEntry.COLUMN_NOTE,
+                NoteInfoEntry.COLUMN_COURSE_ID,
+                NoteInfoEntry._ID};
         Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME, noteColumns, null, null, null, null, noteOrder);
 
         loadNoteFromDb(noteCursor);
@@ -43,6 +47,7 @@ public class DataManager {
         int noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE);
         int noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE);
         int courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID);
+        int idPos = cursor.getColumnIndex(NoteInfoEntry._ID);
 
         DataManager dm = getInstance();
         dm.mNotes.clear();
@@ -51,10 +56,11 @@ public class DataManager {
             String noteTitle = cursor.getString(noteTitlePos);
             String noteText = cursor.getString(noteTextPos);
             String courseId = cursor.getString(courseIdPos);
+            int id = cursor.getInt(idPos);
 
 
             CourseInfo courseInfo = dm.getCourse(courseId);
-            NoteInfo noteInfo = new NoteInfo(courseInfo, noteTitle, noteText);
+            NoteInfo noteInfo = new NoteInfo(id, courseInfo, noteTitle, noteText);
             dm.mNotes.add(noteInfo);
         }
 

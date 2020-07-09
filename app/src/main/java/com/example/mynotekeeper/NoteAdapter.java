@@ -37,6 +37,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
             NoteInfo note = mNoteInfo.get(position);
             holder.mTextCourse.setText(note.getCourse().getTitle());
             holder.mTextBody.setText(note.getTitle());
+            holder.mId = note.getId();
     }
 
     @Override
@@ -48,12 +49,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
 
         public TextView mTextCourse;
         public TextView mTextBody;
+        public int mId;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mTextCourse = itemView.findViewById(R.id.textCourse);
              mTextBody = itemView.findViewById(R.id.textTitle);
+
 
              itemView.setOnClickListener(this);
 
@@ -63,7 +66,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> {
         public void onClick(View v) {
             int position = getAdapterPosition();
             Intent intent = new Intent(mContext, NoteActivity.class);
-            intent.putExtra(Constants.NOTE_INFO, position);
+            intent.putExtra(Constants.NOTE_INFO, mId);
             mContext.startActivity(intent);
         }
     }
