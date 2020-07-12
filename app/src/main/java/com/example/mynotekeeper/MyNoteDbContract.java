@@ -19,6 +19,10 @@ public final class MyNoteDbContract {
                         + COLUMN_COURSE_ID + " TEXT UNIQUE NOT NULL,"
                         + COLUMN_COURSE_TITLE + " TEXT NOT NULL )";
 
+        public static final String getQName(String columnName) {
+            return TABLE_NAME + "." + columnName;
+        }
+
     }
 
     public static final class NoteInfoEntry implements BaseColumns{
@@ -34,5 +38,9 @@ public final class MyNoteDbContract {
                         + COLUMN_NOTE_TITLE + " TEXT NOT NULL, "
                         + COLUMN_NOTE + " TEXT, "
                         + COLUMN_COURSE_ID + " TEXT NOT NULL )";
+
+        public static final String getQName(String columnName) {
+            return TABLE_NAME + "." + columnName;
+        }
     }
 }

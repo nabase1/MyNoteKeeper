@@ -1,6 +1,7 @@
 package com.example.mynotekeeper;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,7 +13,11 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.GravityCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -26,7 +31,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import static com.example.mynotekeeper.MyNoteContentProviderContract.*;
+import static com.example.mynotekeeper.MyNoteDbContract.*;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private NoteAdapter mNoteAdapter1;
     private AppBarConfiguration mAppBarConfiguration;
@@ -173,5 +181,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void handleSelection(String message) {
         View view = findViewById(R.id.list_items);
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        CursorLoader loader = null;
+
+        final String[] noteColumns = {
+                Notes._ID,
+                Notes.COLUMN_NOTE_TITLE,
+                Notes.COLUMN_COURSE_TITLE
+        };
+
+        final String noteOrder = Notes.COLUMN_COURSE_TITLE + " , " + Notes.COLUMN_NOTE_TITLE;
+
+
+        loader = new CursorLoader(this, Notes.CONTENT_EXPANDED_URI,
+                                    noteColumns,null, null, noteOrder);
+
+
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+
     }
 }

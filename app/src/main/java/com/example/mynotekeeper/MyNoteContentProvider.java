@@ -2,15 +2,27 @@ package com.example.mynotekeeper;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 
+import com.example.mynotekeeper.MyNoteContentProviderContract.Notes;
+
+import static com.example.mynotekeeper.MyNoteContentProviderContract.*;
 import static com.example.mynotekeeper.MyNoteDbContract.*;
 
 public class MyNoteContentProvider extends ContentProvider {
 
     private MyNoteOpenHelper mOpenHelper;
+    private static UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    static {
+        sUriMatcher.addURI(Constants.AUTHORITY, Courses.PATH, Constants.COURSES);
+        sUriMatcher.addURI(Constants.AUTHORITY, Notes.PATH, Constants.NOTES);
+        sUriMatcher.addURI(Constants.AUTHORITY, Notes.PATH_EXTENDED, Constants.NOTES_EXPANDED);
+
+    }
     public MyNoteContentProvider() {
     }
 
@@ -45,8 +57,48 @@ public class MyNoteContentProvider extends ContentProvider {
 
        Cursor cursor = null;
        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-       cursor = db.query(CourseEntryInfo.TABLE_NAME, projection, selection, selectionArgs,null, null, sortOrder);
-       return cursor;
+
+       int uriMatch = sUriMatcher.match(uri);
+
+       switch (uriMatch) {
+
+           case Constants.COURSES:
+               cursor = db.query(CourseEntryInfo.TABLE_NAME, projection, selection, selectionArgs,null, null, sortOrder);
+
+               break;
+
+           case Constants.NOTES:
+                   cursor = db.query(NoteInfoEntry.TABLE_NAME, projection, selection, selectionArgs,null, null, sortOrder);
+
+                   break;
+
+           case Constants.NOTES_EXPANDED:
+               cursor = notesExpandedQuery(db, projection, selection, selectionArgs, sortOrder);
+
+               break;
+
+       }
+        return cursor;
+
+    }
+
+    private Cursor notesExpandedQuery(SQLiteDatabase db, String[] projection,
+                                      String selection, String[] selectionArgs, String sortOrder) {
+
+        String[] columns = new String[projection.length];
+        for (int idx=0; idx < projection.length; idx++){
+            columns[idx] = projection[idx].equals(BaseColumns._ID) ||
+                    projection[idx].equals(CourseColumnId.COLUMN_COURSE_ID) ?
+                    NoteInfoEntry.getQName(projection[idx]) : projection[idx];
+        }
+
+        String tableWithJoin = NoteInfoEntry.TABLE_NAME + " JOIN " + CourseEntryInfo.TABLE_NAME + " ON "
+                                + NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + "="
+                                + CourseEntryInfo.getQName(CourseEntryInfo.COLUMN_COURSE_ID);
+
+        return db.query(tableWithJoin, columns, selection, selectionArgs, null, null, sortOrder);
+
+
     }
 
     @Override

@@ -20,6 +20,8 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
+import com.example.mynotekeeper.MyNoteContentProviderContract.Courses;
+
 import java.util.List;
 
 import static com.example.mynotekeeper.MyNoteDbContract.CourseEntryInfo;
@@ -253,11 +255,12 @@ public class NoteActivity extends AppCompatActivity
 
     private CursorLoader createLoaderCourses(){
 
-        Uri uri = Uri.parse("content://com.example.mynotekeeper.provider");
-        String[] courseColumns = {CourseEntryInfo.COLUMN_COURSE_ID,
-                CourseEntryInfo.COLUMN_COURSE_TITLE,
-                CourseEntryInfo._ID };
-        return new CursorLoader(this, uri, courseColumns, null, null, CourseEntryInfo.COLUMN_COURSE_TITLE);
+        Uri uri = Courses.CONTENT_URI;
+        String[] courseColumns = {  Courses.COLUMN_COURSE_ID,
+                                    Courses.COLUMN_COURSE_TITLE,
+                                    Courses._ID };
+
+        return new CursorLoader(this, uri, courseColumns, null, null, Courses.COLUMN_COURSE_TITLE);
 
     }
 
